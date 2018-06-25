@@ -1,0 +1,93 @@
+<div class="container row">
+    <form action="javascript:void(0)" method="post" class="form-horizontal col-sm-8" id="addstu"
+          style="margin: 20px 0;">
+        <div class="form-group">
+            <label for="inputName_tcc" class="col-sm-2 control-label">教 师</label>
+            <div class="col-sm-10">
+                <select name=""  class="form-control addTnum" id="select_Tnum">
+
+                </select>
+                <input type="text" class="form-control" id="inputName_tcc" name="Stunum" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputCname_tcc" class="col-sm-2 control-label">课 程</label>
+            <div class="col-sm-10">
+                <select name=""  class="form-control addCnum" id="select_Cnum">
+
+                </select>
+                <input type="text" class="form-control" id="inputCname_tcc" name="Name" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputMname_tcc" class="col-sm-2 control-label">专 业</label>
+            <div class="col-sm-10">
+                <select name=""  class="form-control addMnum" id="select_Mnum">
+
+                </select>
+                <input type="text" class="form-control" id="inputMname_tcc" name="Pwd" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" onclick="sendData_tcc()" class="btn btn-default">提 交</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="alert_tcc"
+                 style="display: none;font-size: 15px;text-align: center">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                <span></span>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    function sendData_tcc() {
+        $.ajax({
+            url: "addtcc.php",
+            type: "post",
+            dataType: "json",
+            data: {
+                "Tnum": $("#select_Tnum").val(),
+                "Cnum": $("#select_Cnum").val(),
+                "Mnum": $("#select_Mnum").val()
+            },
+            success: function (result) {
+                switch (result) {
+                    case 2:
+                        $("#alert_tcc").css({"display": "block"}).children("span:last-child").html("此授课信息已存在！");
+                        break;
+                    case 1:
+                        $("#alert_tcc").css({"display": "block"}).children("span:last-child").html("数据添加失败！");
+                        break;
+                    default:
+                        alert("添加授课信息成功！")
+                        window.location.href = "admin.php";
+
+                }
+
+            }, error: function (e) {
+                console.error(e.responseText);
+            }
+        });
+    }
+
+    $('#select_Tnum').change(function(){
+        var name = $('#select_Tnum').find("option:selected").attr("data_Tname");
+        $('#inputName_tcc').val(name);
+    });
+    $('#select_Cnum').change(function(){
+        var name = $('#select_Cnum').find("option:selected").attr("data_Cname");
+        $('#inputCname_tcc').val(name);
+    });
+    $('#select_Mnum').change(function(){
+        var name = $('#select_Mnum').find("option:selected").attr("data_Mname");
+        $('#inputMname_tcc').val(name);
+    });
+
+</script>

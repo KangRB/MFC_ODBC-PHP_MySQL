@@ -1,0 +1,108 @@
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>学 号</th>
+        <th>姓 名</th>
+        <th>密 码</th>
+        <th>操 作</th>
+    </tr>
+    </thead>
+
+    <tbody id="TB_stu">
+
+    </tbody>
+</table>
+
+<div class="form-inline" id="updata-stu-form" style="display: none;" action="POST">
+    <div class="form-group">
+        <input type="text" class="form-control" id="Stunum" name="Stunum" placeholder="学号">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Name" name="Name" placeholder="姓名">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Pwd" name="Pwd" placeholder="密码">
+    </div>
+    <button type="submit" class="btn btn-default">确认修改</button>
+
+</div>
+<div class="col-sm-6" style="margin:10px 0">
+    <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="update_alert"
+         style="display: none;font-size: 15px;text-align: center">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span></span>
+    </div>
+</div>
+<script>
+    $.ajax({
+        url: "getStudentData.php",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            addTable(data);
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+
+    function addTable(data) {
+
+        for (var i = 0; i < data.length; i++) {
+            var index = i + 1;
+            var temp_Stunum = "'" + data[i].Stunum + "'";
+            var temp_Name = "'" + data[i].Name + "'";
+            var temp_Pwd = "'" + data[i].Pwd + "'";
+            $('#TB_stu').append('<tr><th scope="row">' + index + '</th>' +
+                '<td>' + data[i].Stunum + '</td>' +
+                '<td>' + data[i].Name + '</td>' +
+                '<td>' + data[i].Pwd + '</td>' +
+                '<td>' +
+                '<a class="btn btn-info btn-xs" onclick="updata(' + temp_Stunum + ',' + temp_Name + ',' + temp_Pwd + ')">修改</a>\n' +
+                '<a class="btn btn-danger btn-xs" href="../delete.php?Stunum=' + data[i].Stunum + '">删除</a>\n' +
+                '</td></tr>>');
+        }
+    }
+
+    function updata(Stunum, Name, Pwd) {
+        $('#Stunum').val(Stunum);
+        $('#Name').val(Name);
+        $('#Pwd').val(Pwd);
+        $('#updata-stu-form').css({"display": "block"});
+
+        $('#updata-stu-form>button').click(function () {
+            if ($('#Pwd').val().length > 6) {
+                $("#update_alert").css({"display": "block"}).children("span:last-child").html("密码不能超过6位！");
+            } else if ($('#Stunum').val() == "" || $('#Name') == "" || $('#Pwd') == "") {
+                $("#update_alert").css({"display": "block"}).children("span:last-child").html("请输入完整信息！");
+            } else {
+                $.ajax({
+                    url: "updataStudent.php",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "Stunum_tmp": Stunum,
+                        "Stunum": $('#Stunum').val(),
+                        "Name": $('#Name').val(),
+                        "Pwd": $('#Pwd').val()
+                    },
+                    success: function (result) {
+                        if (result == 1) {
+                            alert("修改成功！");
+                            window.location.href = "admin.php";
+                        } else {
+                            alert("修改失败！");
+                        }
+
+                    }, error: function (e) {
+                        console.error(e.responseText);
+                    }
+                });
+            }
+
+        });
+    }
+
+
+</script>

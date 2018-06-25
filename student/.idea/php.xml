@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="." />
+      <path value="C:\php\pear" />
+      <path value="" />
+      <path value="F:\PHP开发\大作业" />
+    </include_path>
+  </component>
+</project>

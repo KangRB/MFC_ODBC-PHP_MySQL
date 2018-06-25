@@ -1,0 +1,94 @@
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>课程号</th>
+        <th>课程名</th>
+        <th>操 作</th>
+    </tr>
+    </thead>
+
+    <tbody id="TB_course">
+
+    </tbody>
+</table>
+
+<div class="form-inline" id="updata-course-form" style="display: none;" action="POST">
+    <div class="form-group">
+        <input type="text" class="form-control" id="Cnum" name="Cnum" placeholder="课程号">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Cname" name="Cname" placeholder="课程名">
+    </div>
+    <button type="submit" class="btn btn-default">确认修改</button>
+
+</div>
+<div class="col-sm-6" style="margin:10px 0">
+    <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="c_update_alert" style="display: none;font-size: 15px;text-align: center">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span></span>
+    </div>
+</div>
+<script>
+    $.ajax({
+        url: "getCourseData.php",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            addTable_C(data);
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+
+    function addTable_C(data) {
+
+        for (var i = 0; i < data.length; i++) {
+            var index = i + 1;
+            var temp_Cnum = "'" + data[i].Cnum + "'";
+            var temp_Cname = "'" + data[i].Cname + "'";
+            $('#TB_course').append('<tr><th scope="row">' + index + '</th>' +
+                '<td>' + data[i].Cnum + '</td>' +
+                '<td>' + data[i].Cname + '</td>' +
+                '<td>' +
+                '<a class="btn btn-info btn-xs" onclick="updata_C(' + temp_Cnum + ',' + temp_Cname + ')">修改</a>\n' +
+                '<a class="btn btn-danger btn-xs" href="../delete_c.php?Cnum=' + data[i].Cnum + '">删除</a>\n' +
+                '</td></tr>>');
+        }
+    }
+
+    function updata_C(Cnum, Cname) {
+        $('#Cnum').val(Cnum);
+        $('#Cname').val(Cname);
+        $('#updata-course-form').css({"display": "block"});
+
+        $('#updata-course-form>button').click(function(){
+            if($('#Cnum').val()==""||$('#Cname')==""){
+                $("#c_update_alert").css({"display": "block"}).children("span:last-child").html("请输入完整信息！");
+            }else{
+                $.ajax({
+                    url: "updataCourse.php",
+                    type:"POST",
+                    dataType:"html",
+                    data: {"Cnum_tmp":Cnum,"Cnum":$('#Cnum').val(),"Cname":$('#Cname').val()},
+                    success:function(result){
+                        if(result==1){
+                            alert("修改成功！");
+                            window.location.href="admin.php";
+                        }else{
+                            alert("修改失败！"+result);
+                        }
+
+                    },error:function(e){
+                        console.error(e.responseText);
+                    }
+                });
+            }
+
+        });
+    }
+
+
+
+</script>

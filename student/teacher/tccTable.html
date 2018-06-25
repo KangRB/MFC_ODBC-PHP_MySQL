@@ -1,0 +1,41 @@
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>教 师</th>
+        <th>课 程</th>
+        <th>专 业</th>
+    </tr>
+    </thead>
+
+    <tbody id="TB_tcc">
+
+    </tbody>
+</table>
+
+
+<script>
+    $.ajax({
+        url: "getTccData.php",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            addTable(data);
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+
+    function addTable(data) {
+
+        for (var i = 0; i < data.length; i++) {
+            var index = i + 1;
+            $('#TB_tcc').append('<tr><th scope="row">' + index + '</th>' +
+                '<td>' + data[i][0] + '</td>' +
+                '<td>' + data[i][1] + '</td>' +
+                '<td>'+ data[i][2] + '</td>' +
+                '</tr>');
+        }
+    }
+
+</script>

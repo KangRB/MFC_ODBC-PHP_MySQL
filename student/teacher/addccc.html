@@ -1,0 +1,120 @@
+<div class="container row">
+    <form action="javascript:void(0)" method="post" class="form-horizontal col-sm-8" id="addccc"
+          style="margin: 20px 0;">
+        <div class="form-group">
+            <label for="inputStunum" class="col-sm-2 control-label">学 号</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="inputStunum">
+
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputName" class="col-sm-2 control-label">姓 名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputName" name="Name" placeholder="姓 名" readonly>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputCore1" class="col-sm-2 control-label">成绩1</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputCore1" name="Core1" placeholder="成绩 1">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputCore2" class="col-sm-2 control-label">成绩2 </label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputCore2" name="Core2" placeholder="成绩 2">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputCore3" class="col-sm-2 control-label">成绩3</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputCore3" name="Core3" placeholder="成绩 3">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" onclick="sendData_s()" class="btn btn-default">提 交</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="alert"
+                 style="display: none;font-size: 15px;text-align: center">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                <span></span>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    //获取已有学号
+    var firstname = '';
+    (function(){
+        $.ajax({
+            url:'getStunum.php',
+            type:'get',
+            dataType:'json',
+            success:function(result){
+                for(var data of result){
+                    $('#inputStunum').append('<option data-name="'+ data.Name+'">'+ data.Stunum+'</option>')
+                }
+
+                firstname = result[0].Name;
+
+                $('#inputName').val(firstname);
+            },error:function(e){
+                console.log(e.responseText);
+            }
+        });
+    })();
+
+
+    // 选中改变姓名框
+    $('#inputStunum').change(function(){
+        var name = $('#inputStunum').find("option:selected").attr("data-name");
+        $('#inputName').val(name);
+    });
+
+    function sendData_s() {
+        if ($('#inputStunum').val() != "" && $('#inputName').val() != "" && $('#inputCore1').val() != "" && $('#inputCore2').val() != "" && $('#inputCore3').val() != "") {
+            $.ajax({
+                url: "addccc.php",
+                type: "post",
+                dataType: "json",
+                data: {
+                    'Stunum': $('#inputStunum').val(),
+                    'Name': $('#inputName').val(),
+                    'Core1': $('#inputCore1').val(),
+                    'Core2': $('#inputCore2').val(),
+                    'Core3': $('#inputCore3').val()
+                },
+                success: function (result) {
+                    switch (result) {
+                        case 2:
+                            $("#alert").css({"display": "block"}).children("span:last-child").html("此学生已有成绩！");
+                            break;
+                        case 1:
+                            $("#alert").css({"display": "block"}).children("span:last-child").html("数据插入失败！");
+                            break;
+                        case 5:
+                            $("#alert").css({"display": "block"}).children("span:last-child").html("没有这个学生！");
+                            break;
+                        default:
+                            alert("添加成绩成功！")
+                            window.location.href = "teacher.php";
+
+                    }
+
+                }, error: function (e) {
+                    console.error(e.responseText);
+                }
+            });
+        } else {
+            alert("请输入完整信息！");
+        }
+    }
+</script>

@@ -1,0 +1,121 @@
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>学 号</th>
+        <th>姓 名</th>
+        <th>成绩1</th>
+        <th>成绩2</th>
+        <th>成绩3</th>
+        <th>修 改</th>
+    </tr>
+    </thead>
+
+    <tbody id="TB_ccc">
+
+    </tbody>
+</table>
+
+<div class="form-inline" id="updata-form" style="display: none;" action="POST">
+    <div class="form-group">
+        <input type="text" class="form-control" id="Stunum" name="Stunum" placeholder="学号" readonly>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Name" name="Name" placeholder="姓名" readonly>
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Core1" name="Core1" placeholder="成绩1">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Core2" name="Core1" placeholder="成绩2">
+    </div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="Core3" name="Core1" placeholder="成绩3">
+    </div>
+    <button type="submit" class="btn btn-default">确认修改</button>
+
+</div>
+<div class="col-sm-6" style="margin:10px 0">
+    <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="update_alert"
+         style="display: none;font-size: 15px;text-align: center">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <span></span>
+    </div>
+</div>
+<script>
+    $.ajax({
+        url: "getCccData.php",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            addTable_ccc(data);
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+
+    function addTable_ccc(data) {
+
+        for (var i = 0; i < data.length; i++) {
+            var index = i + 1;
+            var temp_Stunum = "'" + data[i].Stunum + "'";
+            var temp_Name = "'" + data[i].Name + "'";
+            var temp_Core1 = "'" + data[i].Core1 + "'";
+            var temp_Core2 = "'" + data[i].Core2 + "'";
+            var temp_Core3 = "'" + data[i].Core3 + "'";
+            $('#TB_ccc').append('<tr><th scope="row">' + index + '</th>' +
+                '<td>' + data[i].Stunum + '</td>' +
+                '<td>' + data[i].Name + '</td>' +
+                '<td>' + data[i].Core1 + '</td>' +
+                '<td>' + data[i].Core2 + '</td>' +
+                '<td>' + data[i].Core3 + '</td>' +
+                '<td>' +
+                '<a class="btn btn-info btn-xs" onclick="updata(' + temp_Stunum + ',' + temp_Name + ',' + temp_Core1 + ',' + temp_Core2 + ',' + temp_Core3 + ')">修改</a>\n' +
+                '</td></tr>>');
+        }
+    }
+
+    function updata(Stunum, Name, Core1, Core2, Core3) {
+        $('#Stunum').val(Stunum);
+        $('#Name').val(Name);
+        $('#Core1').val(Core1);
+        $('#Core2').val(Core2);
+        $('#Core3').val(Core3);
+        $('#updata-form').css({"display": "block"});
+
+        $('#updata-form>button').click(function () {
+            if ($('#Stunum').val() == "" || $('#Name') == "" || $('#Core1') == "" || $('#Core2') == "" || $('#Core3') == "") {
+                $("#update_alert").css({"display": "block"}).children("span:last-child").html("请输入完整信息！");
+            } else {
+                $.ajax({
+                    url: "updataCcc.php",
+                    type: "POST",
+                    dataType: "html",
+                    data: {
+                        "Stunum_tmp": Stunum,
+                        "Stunum": $('#Stunum').val(),
+                        "Name": $('#Name').val(),
+                        "Core1": $('#Core1').val(),
+                        "Core2": $('#Core2').val(),
+                        "Core3": $('#Core3').val()
+                    },
+                    success: function (result) {
+                        if (result == 1) {
+                            alert("修改成功！");
+                            window.location.href = "teacher.php";
+                        } else {
+                            alert("修改失败！");
+                        }
+
+                    }, error: function (e) {
+                        console.error(e.responseText);
+                    }
+                });
+            }
+
+        });
+    }
+
+
+</script>

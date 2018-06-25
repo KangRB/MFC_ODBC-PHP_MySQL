@@ -1,0 +1,170 @@
+<table class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>教 师</th>
+        <th>课 程</th>
+        <th>专 业</th>
+        <th>操 作</th>
+    </tr>
+    </thead>
+
+    <tbody id="TB_tcc">
+
+    </tbody>
+</table>
+
+
+<div class="form-inline" id="updata-tcc-div" style="display: none;" action="POST">
+    <div class="form-group">
+
+        <select name="" class="form-control addTnum" id="select_c_Tnum">
+
+        </select>
+        <input type="text" class="form-control" id="tcc_Name" name="Name" readonly>
+    </div>
+    <div class="form-group">
+
+        <select name="" class="form-control addCnum" id="select_c_Cnum">
+
+        </select>
+        <input type="text" class="form-control" id="tcc_Cname" name="Cname" readonly>
+    </div>
+    <div class="form-group">
+
+        <select name="" class="form-control addMnum" id="select_c_Mnum">
+
+        </select>
+        <input type="text" class="form-control" id="tcc_Mname" name="Mname" readonly>
+    </div>
+    <button type="submit" class="btn btn-default">确认修改</button>
+</div>
+
+<script>
+    $.ajax({
+        url: "../teacher/getTccData.php",
+        type: "get",
+        dataType: "json",
+        success: function (data) {
+            addTable_tcc(data);
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+    // 下拉框赋值
+    $.ajax({
+        url: "gettcc.php",
+        type: "get",
+        dataType: "json",
+        success: function (result) {
+            setdata(result);
+            console.log("© 201577F0616康睿博");
+        }, error: function (e) {
+            console.error(e.responseText);
+        }
+    });
+
+    function addTable_tcc(data) {
+
+        for (var i = 0; i < data.length; i++) {
+            var index = i + 1;
+            var temp_Name = "'" + data[i][0] + "'";
+            var temp_Cname = "'" + data[i][1] + "'";
+            var temp_Mname = "'" + data[i][2] + "'";
+            $('#TB_tcc').append('<tr><th scope="row">' + index + '</th>' +
+                '<td>' + data[i][0] + '</td>' +
+                '<td>' + data[i][1] + '</td>' +
+                '<td>' + data[i][2] + '</td>' +
+                '<td>' +
+                '<a class="btn btn-info btn-xs" onclick="updata_tcc(' + temp_Name + ',' + temp_Cname + ',' + temp_Mname + ')">修改</a>\n' +
+                '<a class="btn btn-danger btn-xs" href="../delete_tcc.php?Tname=' + temp_Name + '&Cname=' + temp_Cname + '&Mname=' + temp_Mname + '">删除</a>\n' +
+                '</td></tr>>');
+        }
+    }
+
+
+    function updata_tcc(Name, Cname, Mname) {
+        $('#tcc_Name').val(Name);
+        $('#tcc_Cname').val(Cname);
+        $('#tcc_Mname').val(Mname);
+        // 设置下拉框的默认选中值！！！
+        $('#select_c_Tnum option').each(function () {
+            if ($(this).attr('data_tname') === Name) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        $('#select_c_Cnum option').each(function () {
+            if ($(this).attr('data_cname') === Cname) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        $('#select_c_Mnum option').each(function () {
+            if ($(this).attr('data_mname') === Mname) {
+                $(this).attr("selected", "selected");
+            }
+        });
+        // end
+        $('#updata-tcc-div').css({"display": "block"});
+        // 传输修改数据！
+        $('#updata-tcc-div>button').click(function () {
+            $.ajax({
+                url: "updataTcc.php",
+                type: "POST",
+                dataType: "html",
+                data: {
+                    "Tname_tmp":Name,
+                    "Cname_tmp":Cname,
+                    "Mname_tmp":Mname,
+                    "Tnum": $('#select_c_Tnum').val(),
+                    "Cnum": $('#select_c_Cnum').val(),
+                    "Mnum": $('#select_c_Mnum').val()
+                },
+                success: function (result) {
+                    if (result == 1) {
+                        alert("修改成功！");
+                        window.location.href = "admin.php";
+                    } else {
+                        alert("修改失败！" + result);
+                    }
+
+                }, error: function (e) {
+                    console.error(e.responseText);
+                }
+            });
+        });
+    }
+
+    function setdata(data) {
+
+        for (var value of data[0]) {
+            $('.addTnum').append("<option data_Tname='" + value.Name + "'>" + value.Tnum + "</option>");
+        }
+        ;
+        for (var value of data[1]) {
+            $('.addCnum').append("<option data_Cname='" + value.Cname + "'>" + value.Cnum + "</option>");
+        }
+        ;
+        for (var value of data[2]) {
+            $('.addMnum').append("<option data_Mname='" + value.Mname + "'>" + value.Mnum + "</option>");
+        }
+        ;
+
+        $('#inputName_tcc').val($('#select_Tnum>option:first').attr("data_Tname"));
+        $('#inputCname_tcc').val($('#select_Cnum>option:first').attr("data_Cname"));
+        $('#inputMname_tcc').val($('#select_Mnum>option:first').attr("data_Mname"));
+    }
+
+    $('#select_c_Tnum').change(function () {
+        var name = $('#select_c_Tnum').find("option:selected").attr("data_Tname");
+        $('#tcc_Name').val(name);
+    });
+    $('#select_c_Cnum').change(function () {
+        var name = $('#select_c_Cnum').find("option:selected").attr("data_Cname");
+        $('#tcc_Cname').val(name);
+    });
+    $('#select_c_Mnum').change(function () {
+        var name = $('#select_c_Mnum').find("option:selected").attr("data_Mname");
+        $('#tcc_Mname').val(name);
+    });
+
+</script>

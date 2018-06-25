@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>学生成绩管理系统</title>
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+    <script src="lib/jquery.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        #biaoti {
+            color: #00F;
+
+        }
+
+        .content {
+            text-align: center;
+            margin: 170px auto;
+        }
+
+        .login {
+            margin: 50px auto;
+        }
+
+        #alert {
+            display: none;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="content">
+        <h1 id="biaoti">欢迎访问学生成绩管理系统</h1>
+        <div class="login">
+            <form class="form-horizontal" id="login_from" method="post" action="javascript:void(0)">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-4 control-label">用户名：</label>
+                    <div class="col-sm-5">
+                        <input type="text" name="username" id="username" class="form-control" id="inputEmail3"
+                               placeholder="用户名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-4 control-label">密码：</label>
+                    <div class="col-sm-5">
+                        <input type="password" name="password" id="password" class="form-control" id="inputPassword3"
+                               placeholder="密码">
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="checkbox">
+                            <label>
+                                <input type="radio" name="usertypeG" value="1" id="student"/>
+                                学生</label>
+                            <label>
+                                <input type="radio" name="usertypeG" value="2" id="teacher"/>
+                                教师</label>
+                            <label>
+                                <input type="radio" name="usertypeG" value="3" id="admin"/>
+                                管理员</label>
+                            <input type="radio" checked name="usertypeG" value="4" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button class="btn btn-default" id="login_btn" onclick="checklogin()">登 录</button>
+                    </div>
+                </div>
+                <!--错误提示框-->
+                <div class="form-group">
+                    <div class="alert alert-danger col-sm-6 col-sm-offset-3" role="alert" id="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">Error:</span>
+                        <span></span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    function checklogin() {
+        $.ajax({
+            url: "./login.php",
+            dataType: "json",
+            type: "POST",
+            data: $("#login_from").serialize(),
+            success: function (result) {
+                console.log(result);
+                switch (result) {
+                    case 3:
+                        alert("管理员登录成功！")
+                        window.location.href = "./admin/admin.php";
+                        break;
+                    case 2:
+                        alert("教师登录成功！")
+                        window.location.href = "./teacher/teacher.php";
+                        break;
+                    case 1:
+                        alert("学生登录成功！")
+                        window.location.href = "./student/student.php";
+                        break;
+                    case 4:
+                        $("#alert").css({"display": "block"}).children("span:last-child").html("请选择身份！");
+                        break;
+                    case 0:
+                        $("#alert").css({"display": "block"}).children("span:last-child").html("账号密码错误！");
+                        break;
+                    default:
+                        $("#alert").css({"display": "block"}).children("span:last-child").html("请输入账号和密码！");
+                }
+            }, error: function (e) {
+                console.log(e.responseText);
+            }
+        });
+    }
+
+
+</script>

@@ -1,0 +1,62 @@
+<div class="container row">
+    <form action="javascript:void(0)" method="post" class="form-horizontal col-sm-8" id="addcourse"
+          style="margin: 20px 0;">
+        <div class="form-group">
+            <label for="inputCnum" class="col-sm-2 control-label">课程号</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputCnum" name="Cnum" placeholder="课程号">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputCname" class="col-sm-2 control-label">课程名</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputCname" name="Cname" placeholder="课程名">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" onclick="sendData_c()" class="btn btn-default">提 交</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="alert alert-danger col-sm-8 col-sm-offset-3" role="alert" id="alert_c" style="display: none;font-size: 15px;text-align: center">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Error:</span>
+                <span></span>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    function sendData_c() {
+        if ($('#inputCnum').val() != "" && $('#inputCname').val() != "") {
+            $.ajax({
+                url: "addcourse.php",
+                type: "post",
+                dataType: "json",
+                data: {"Cnum":$('#inputCnum').val(),"Cname":$('#inputCname').val()},
+                success: function (result) {
+                    switch (result) {
+                        case 2:
+                            $("#alert_c").css({"display": "block"}).children("span:last-child").html("此课程号已存在！");
+                            break;
+                        case 1:
+                            $("#alert_c").css({"display": "block"}).children("span:last-child").html("数据插入失败！");
+                            break;
+                        default:
+                            alert("添加课程成功！")
+                            window.location.href = "admin.php";
+
+                    }
+
+                }, error: function (e) {
+                    console.error(e.responseText);
+                }
+            });
+        } else {
+            alert("请输入完整信息！")
+        }
+
+    }
+</script>
